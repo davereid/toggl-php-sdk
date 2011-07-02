@@ -30,7 +30,7 @@ class Toggl {
    * Construct the request URI.
    */
   protected function getURL($name) {
-    return $this->base_url . '/api/' . self::VERSION . $name . '.json';
+    return $this->base_url . '/api/' . self::API_VERSION . $name . '.json';
   }
 
   /**
