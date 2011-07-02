@@ -30,7 +30,7 @@ class Toggl {
    * Construct the request URI.
    */
   protected function getURL($name) {
-    return $this->base_url . '/api/' . self::API_VERSION . $name . '.json';
+    return $this->base_url . '/api/' . self::API_VERSION . '/' . $name . '.json';
   }
 
   /**
@@ -104,6 +104,9 @@ class Toggl {
 
     $data = array();
     if (isset($start_date) && isset($end_date)) {
+      if ($end_date < $start_date) {
+        throw new TogglException("Start date cannot be after the end date.");
+      }
       $data['start_date'] = gmdate(DATE_ISO8601, $start_date);
       $data['end_date'] = gmdate(DATE_ISO8601, $end_date);
     }
