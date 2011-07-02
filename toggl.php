@@ -14,6 +14,7 @@ class Toggl {
   const API_VERSION = 'v6';
 
   private $base_url = 'https://www.toggl.com';
+
   private $user_agent = 'Toggle PHP SDK';
 
   private $token;
@@ -41,7 +42,6 @@ class Toggl {
     return array(
       'Authorization' => 'Basic ' . base64_encode($this->token . ':api_token'),
       'User-Agent' => $this->user_agent,
-      'Content-Type' => 'application/json',
     );
   }
 
@@ -59,23 +59,27 @@ class Toggl {
       'method' => 'GET',
       'data' => NULL,
     );
-
-    foreach (array_merge($this->getHeaders(), $headers) as $header => $value) {
-      $headers[$header] = $header . ': ' . $value;
-    }
     
     // Set the CURL variables.
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUSET, $options['method']);
 
     // Include post data.
     if (isset($options['data'])) {
       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($options['data']));
+      $headers['Content-Type'] = 'application/json';
     }
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUSET, $options['method']);
+
+    // Build and format the headers.
+    foreach (array_merge($this->getHeaders(), $headers) as $header => $value) {
+      $headers[$header] = $header . ': ' . $value;
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
 
     // Perform the API request.
     $result = curl_exec($ch);
@@ -95,7 +99,7 @@ class Toggl {
    */
   public function timeEntriesLoadRecent($start_date = NULL, $end_date = NULL) {
     if (isset($start_date) != isset($end_date)) {
-      throw new ToggleAPIException("Invalid parameters for getTimeEntries.");
+      throw new ToggleException("Invalid parameters for getTimeEntries.");
     }
 
     $data = array();
@@ -112,6 +116,7 @@ class Toggl {
    * Save a time entry for the current user.
    *
    * @param $timeEntry
+   *   A time entry object.
    */
   public function timeEntrySave($timeEntry) {
     $options['method'] = !empty($timeEntry->id) ? 'PUT' : 'POST';
@@ -195,7 +200,7 @@ class Toggl {
 class TogglTimeEntry {
   private $parent;
 
-  function __construct(TogglAPI $parent) {
+  function __construct(Toggl $parent) {
     $this->parent = $parent;
   }
 
