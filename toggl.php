@@ -13,10 +13,6 @@ class Toggl {
    */
   const API_VERSION = 'v6';
 
-  private $base_url = 'https://www.toggl.com';
-
-  private $user_agent = 'Toggle PHP SDK';
-
   private $token;
 
   /**
@@ -30,7 +26,7 @@ class Toggl {
    * Construct the request URI.
    */
   protected function getURL($name) {
-    return $this->base_url . '/api/' . self::API_VERSION . '/' . $name . '.json';
+    return 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $name . '.json';
   }
 
   /**
@@ -41,7 +37,7 @@ class Toggl {
   protected function getHeaders() {
     return array(
       'Authorization' => 'Basic ' . base64_encode($this->token . ':api_token'),
-      'User-Agent' => $this->user_agent,
+      'User-Agent' => 'Toggl PHP SDK',
     );
   }
 
