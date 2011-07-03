@@ -6,6 +6,7 @@ class TogglException extends Exception {}
  * Toggl API Class
  *
  * @see https://www.toggl.com/public/api
+ * @see https://github.com/davereid/toggl-php-sdk
  */
 class Toggl {
   /**
@@ -22,6 +23,14 @@ class Toggl {
     $this->token = $token;
   }
 
+  public function setToken($token) {
+    $this->token = $token;
+  }
+
+  public function getToken() {
+    return $this->token;
+  }
+
   /**
    * Construct the request URI.
    */
@@ -36,8 +45,8 @@ class Toggl {
    */
   protected function getHeaders() {
     return array(
-      'Authorization' => 'Basic ' . base64_encode($this->token . ':api_token'),
-      'User-Agent' => 'Toggl PHP SDK',
+      //'Authorization' => 'Basic ' . base64_encode($this->token . ':api_token'),
+      //'User-Agent' => 'Toggl PHP SDK (+https://github.com/davereid/toggl-php-sdk)',
     );
   }
 
@@ -46,44 +55,52 @@ class Toggl {
       $url .= '?' . http_build_query($options['data'], '&');
       $options['data'] = NULL;
     }
-    return $this->sendRequest($url, $options);
+    return $this->request($url, $options);
   }
 
-  protected function sendRequest($url, array $options = array()) {
+  protected function request($url, array $options = array()) {
     $options += array(
       'headers' => array(),
       'method' => 'GET',
       'data' => NULL,
     );
-    
+
     // Set the CURL variables.
     $ch = curl_init();
 
     // Include post data.
     if (isset($options['data'])) {
       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($options['data']));
-      $headers['Content-Type'] = 'application/json';
+      $options['headers']['Content-Type'] = 'application/json';
     }
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUSET, $options['method']);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Needed since Toggl's SSL fails without this.
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Toggl PHP SDK (+https://github.com/davereid/toggl-php-sdk)');
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $options['method']);
+    curl_setopt($ch, CURLOPT_USERPWD, $this->getToken() . ':api_token');
 
     // Build and format the headers.
-    foreach (array_merge($this->getHeaders(), $headers) as $header => $value) {
-      $headers[$header] = $header . ': ' . $value;
+    foreach (array_merge($this->getHeaders(), $options['headers']) as $header => $value) {
+      $options['headers'][$header] = $header . ': ' . $value;
     }
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $options['headers']);
 
     // Perform the API request.
     $result = curl_exec($ch);
+    if ($result == FALSE) {
+      throw new TogglException(curl_error($ch));
+    }
 
+    // Build the response.
     $response = new stdClass();
     $response->data = json_decode($result);
     $response->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $resposne->success = $response->code == 200;
+    $response->success = $response->code == 200;
+
+    curl_close($ch);
     return $response;
   }
 
@@ -98,17 +115,17 @@ class Toggl {
       throw new ToggleException("Invalid parameters for getTimeEntries.");
     }
 
-    $data = array();
+    $options = array();
     if (isset($start_date) && isset($end_date)) {
       if ($end_date < $start_date) {
         throw new TogglException("Start date cannot be after the end date.");
       }
-      $data['start_date'] = gmdate(DATE_ISO8601, $start_date);
-      $data['end_date'] = gmdate(DATE_ISO8601, $end_date);
+      $options['data']['start_date'] = gmdate(DATE_ISO8601, $start_date);
+      $options['data']['end_date'] = gmdate(DATE_ISO8601, $end_date);
     }
 
     // @todo Convert this into an array of timeEntry classes.
-    return $this->getRequest($this->getURL('tasks'), $data);
+    return $this->getRequest($this->getURL('tasks'), $options);
   }
 
   /**
@@ -119,7 +136,7 @@ class Toggl {
    */
   public function timeEntrySave($timeEntry) {
     $options['method'] = !empty($timeEntry->id) ? 'PUT' : 'POST';
-    $url = 'time_entries' . !empty($timeEntry->id) ? '/' . $timeEntry->id : '';
+    $url = 'time_entries' . (!empty($timeEntry->id) ? '/' . $timeEntry->id : '');
     $options['data']['time_entry'] = $timeEntry;
 
     $response = $this->request($this->getURL($url), $options);
@@ -152,7 +169,7 @@ class Toggl {
 
   public function clientSave($client) {
     $options['method'] = !empty($client->id) ? 'PUT' : 'POST';
-    $url = 'clients' . !empty($client->id) ? '/' . $client->id : '';
+    $url = 'clients' . (!empty($client->id) ? '/' . $client->id : '');
     $options['data']['client'] = $client;
 
     $response = $this->request($this->getURL($url), $options);
@@ -175,7 +192,7 @@ class Toggl {
 
   public function projectSave($project) {
     $options['method'] = !empty($project->id) ? 'PUT' : 'POST';
-    $url = 'projects' . !empty($project->id) ? '/' . $project->id : '';
+    $url = 'projects' . (!empty($project->id) ? '/' . $project->id : '');
     $options['data']['project'] = $project;
 
     $response = $this->request($this->getURL($url), $options);
@@ -209,5 +226,22 @@ class TogglTimeEntry {
 
   public function delete() {
     $this->parent->timeEntryDelete($this);
+  }
+}
+
+function toggl_filter_array_set_variables(array $variables = NULL) {
+  static $stored_variables = array();
+
+  if (isset($stored_variables)) {
+    $stored_variables = $variables;
+  }
+
+  return $variables;
+}
+
+function toggl_filter_array($item) {
+  $variables = toggl_filter_array_set_variables();
+  foreach ($variables as $key => $value) {
+
   }
 }
