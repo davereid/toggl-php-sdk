@@ -9,7 +9,7 @@ define('TOGGL_TEST_TOKEN', 'd37a6e2ebf3a5e2f0bb2a579725360f2');
 require_once 'PHPUnit/Framework/TestCase.php';
 
 // Include the Toggl class file.
-require_once dirname(dirname(__FILE__)) . '/toggl.php';
+require_once dirname(dirname(__FILE__)) . '/src/toggl.php';
 
 class TogglTest extends PHPUnit_Framework_TestCase {
   protected $toggl;
