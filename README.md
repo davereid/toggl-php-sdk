@@ -6,7 +6,7 @@ system's API.
 * Author: Dave Reid http://www.davereid.net/
 * Website: http://github.com/davereid/toggl-php-sdk
 * License: GPLv2/MIT
-* Thank: [tanel](https://github.com/tanel)
+* Thanks: [tanel](https://github.com/tanel)
 
 ## Requirements ##
 
