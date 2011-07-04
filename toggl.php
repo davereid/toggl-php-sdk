@@ -33,9 +33,21 @@ class Toggl {
 
   /**
    * Construct the request URI.
+   *
+   * @param string $resource
+   *   The resource name/path.
+   * @param array $query
+   *   An array of query string parameters to add to the URL.
+   *
+   * @return
+   *   A fully-quantified Toggl API URL.
    */
-  protected function getURL($name) {
-    return 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $name . '.json';
+  protected function getURL($resource, array $query = array()) {
+    $url = 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $resource . '.json';
+    if (!empty($query)) {
+      $url .= '?' . http_build_query($options['data'], NULL, '&');
+    }
+    return $url;
   }
 
   /**
@@ -48,14 +60,6 @@ class Toggl {
       //'Authorization' => 'Basic ' . base64_encode($this->token . ':api_token'),
       //'User-Agent' => 'Toggl PHP SDK (+https://github.com/davereid/toggl-php-sdk)',
     );
-  }
-
-  protected function getRequest($url, array $options = array()) {
-    if (!empty($options['data'])) {
-      $url .= '?' . http_build_query($options['data'], '&');
-      $options['data'] = NULL;
-    }
-    return $this->request($url, $options);
   }
 
   protected function request($url, array $options = array()) {
@@ -115,17 +119,17 @@ class Toggl {
       throw new TogglException("Invalid parameters for getTimeEntries.");
     }
 
-    $options = array();
+    $query = array();
     if (isset($start_date) && isset($end_date)) {
       if ($end_date < $start_date) {
         throw new TogglException("Start date cannot be after the end date.");
       }
-      $options['data']['start_date'] = gmdate(DATE_ISO8601, $start_date);
-      $options['data']['end_date'] = gmdate(DATE_ISO8601, $end_date);
+      $query['start_date'] = gmdate(DATE_ISO8601, $start_date);
+      $query['end_date'] = gmdate(DATE_ISO8601, $end_date);
     }
 
     // @todo Convert this into an array of timeEntry classes.
-    return $this->getRequest($this->getURL('tasks'), $options);
+    return $this->request($this->getURL('tasks', $query), $options);
   }
 
   /**
