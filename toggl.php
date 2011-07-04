@@ -211,37 +211,63 @@ class Toggl {
   public function userLoad() {
     return $this->request($this->getURL('me'));
   }
+
+  public function loadAll($resource) {
+    $response = $this->request($this->getURL($resource));
+    if (isset($response->data->data) && is_array($response->data->data)) {
+      $resources = toggl_map_ids($response->data->data);
+      return $resources;
+    }
+    return FALSE;
+  }
+
+  public function save($resource, $object) {
+    $options['method'] = !empty($object->id) ? 'PUT' : 'POST';
+    $url = $resource . '/' . (!empty($object->id) ? '/' . $object->id : '');
+    $options['data']['client'] = $object;
+
+    $response = $this->request($this->getURL($url), $options);
+    $client = $response->data;
+    return $response;
+  }
+
+  public function delete($resource, $object) {
+    $options['method'] = 'DELETE';
+    $url = $resource . '/' . $object->id;
+
+    $response = $this->request($this->getURL($url), $options);
+    $client = $response->data;
+    return $response;
+  }
 }
 
-class TogglTimeEntry {
-  private $parent;
-
-  function __construct(Toggl $parent) {
-    $this->parent = $parent;
+function toggl_map_ids(array $items) {
+  $return = array();
+  foreach ($items as $key => $item) {
+    if (isset($item->id)) {
+      $key = $item->id;
+    }
+    $return[$key] = $item;
   }
-
-  public function save() {
-    $this->parent->timeEntrySave($this);
-  }
-
-  public function delete() {
-    $this->parent->timeEntryDelete($this);
-  }
+  return $return;
 }
 
 function toggl_filter_array_set_variables(array $variables = NULL) {
   static $stored_variables = array();
 
-  if (isset($stored_variables)) {
+  if (isset($variables)) {
     $stored_variables = $variables;
   }
 
-  return $variables;
+  return $stored_variables;
 }
 
 function toggl_filter_array($item) {
   $variables = toggl_filter_array_set_variables();
   foreach ($variables as $key => $value) {
-
+    if (!isset($item->{$key}) || $item->{$key} != $value) {
+      return FALSE;
+    }
   }
+  return $item;
 }
