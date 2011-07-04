@@ -112,7 +112,7 @@ class Toggl {
    */
   public function timeEntriesLoadRecent($start_date = NULL, $end_date = NULL) {
     if (isset($start_date) != isset($end_date)) {
-      throw new ToggleException("Invalid parameters for getTimeEntries.");
+      throw new TogglException("Invalid parameters for getTimeEntries.");
     }
 
     $options = array();
@@ -209,7 +209,11 @@ class Toggl {
   }
 
   public function userLoad() {
-    return $this->request($this->getURL('me'));
+    $response = $this->request($this->getURL('me'));
+    if (!empty($response->data->data)) {
+      return $response->data->data;
+    }
+    return FALSE;
   }
 
   public function loadAll($resource) {
