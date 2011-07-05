@@ -14,6 +14,10 @@ class Toggl {
    */
   const API_VERSION = 'v6';
 
+  const DATE_FORMAT = 'Y-m-d\TH:i:sO';
+
+  private $userAgent = 'Toggl PHP SDK';
+
   private $token;
 
   /**
@@ -82,7 +86,7 @@ class Toggl {
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HEADER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // Needed since Toggl's SSL fails without this.
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Toggl PHP SDK (+https://github.com/davereid/toggl-php-sdk)');
+    curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $options['method']);
     curl_setopt($ch, CURLOPT_USERPWD, $this->getToken() . ':api_token');
 
@@ -124,8 +128,8 @@ class Toggl {
       if ($end_date < $start_date) {
         throw new TogglException("Start date cannot be after the end date.");
       }
-      $query['start_date'] = gmdate(DATE_ISO8601, $start_date);
-      $query['end_date'] = gmdate(DATE_ISO8601, $end_date);
+      $query['start_date'] = gmdate(self::DATE_FORMAT, $start_date);
+      $query['end_date'] = gmdate(self::DATE_FORMAT, $end_date);
     }
 
     // @todo Convert this into an array of timeEntry classes.
@@ -139,6 +143,11 @@ class Toggl {
    *   A time entry object.
    */
   public function timeEntrySave($timeEntry) {
+    // Add a default created with
+    if (!isset($timeEntry->created_with)) {
+      $timeEntry->created_with = $this->userAgent;
+    }
+
     $options['method'] = !empty($timeEntry->id) ? 'PUT' : 'POST';
     $url = 'time_entries' . (!empty($timeEntry->id) ? '/' . $timeEntry->id : '');
     $options['data']['time_entry'] = $timeEntry;
