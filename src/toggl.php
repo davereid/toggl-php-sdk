@@ -1,7 +1,5 @@
 <?php
 
-class TogglException extends Exception {}
-
 /**
  * Toggl API Class
  *
@@ -49,7 +47,7 @@ class Toggl {
   protected function getURL($resource, array $query = array()) {
     $url = 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $resource . '.json';
     if (!empty($query)) {
-      $url .= '?' . http_build_query($options['data'], NULL, '&');
+      $url .= '?' . http_build_query($query, NULL, '&');
     }
     return $url;
   }
@@ -118,7 +116,7 @@ class Toggl {
    * @param int $start_date
    * @param int $end_date
    */
-  public function timeEntriesLoadRecent($start_date = NULL, $end_date = NULL) {
+  public function timeEntriesLoadRecent($start_date = NULL, $end_date = NULL, array $options = array()) {
     if (isset($start_date) != isset($end_date)) {
       throw new TogglException("Invalid parameters for getTimeEntries.");
     }
@@ -133,7 +131,7 @@ class Toggl {
     }
 
     // @todo Convert this into an array of timeEntry classes.
-    return $this->request($this->getURL('tasks', $query), $options);
+    return $this->request($this->getURL('time_entries', $query), $options);
   }
 
   /**
