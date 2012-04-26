@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Toggl PHP SDK : PHP SDK for the Toggl API" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Toggl PHP SDK</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/davereid/toggl-php-sdk">Fork Me on GitHub</a>
+
+          <h1 id="project_title">Toggl PHP SDK</h1>
+          <h2 id="project_tagline">PHP SDK for the Toggl API</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/davereid/toggl-php-sdk/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/davereid/toggl-php-sdk/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Requirements</h3>
+
+<ul>
+<li>PHP 5.3 or greater</li>
+<li>
+<a href="http://us.php.net/manual/en/book.curl.php">cURL</a> PHP extension</li>
+<li>
+<a href="http://us.php.net/manual/en/book.json.php">JSON</a> PHP extension</li>
+<li>
+<a href="https://github.com/sebastianbergmann/phpunit/">PHPUnit</a> (for running unit tests)</li>
+</ul><h3>Usage</h3>
+
+<pre><code>&lt;?php
+$api_token = '00000000000000000000000000000000'; // Valid Toggl.com API token
+$connection = new TogglConnection($api_token);
+$time_entry = TogglTimeEntry::load($connection, 1); // Load time entry #1.
+$time_entry-&gt;description = 'New description for #1.'
+$time_entry-&gt;save();
+?&gt;
+</code></pre>
+
+<h2>Links</h2>
+
+<ul>
+<li><a href="https://www.toggl.com/public/api">Toggl.com API reference</a></li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Toggl PHP SDK maintained by <a href="https://github.com/davereid">davereid</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
