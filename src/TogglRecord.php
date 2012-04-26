@@ -7,6 +7,11 @@ abstract class TogglRecord {
   private $data = array();
   private $connection;
 
+  public function __construct(TogglConnection $connection, array $data = array()) {
+    $this->connection = $connection;
+    $this->data = $data;
+  }
+
   public function __get($name) {
     if (array_key_exists($name, $this->data)) {
       return $this->data[$name];
@@ -41,11 +46,6 @@ abstract class TogglRecord {
     return $this->data;
   }
 
-  function __construct(TogglConnection $connection, array $data = array()) {
-    $this->connection = $connection;
-    $this->data = $data;
-  }
-
   public static function load(TogglConnection $connection, $id) {
     if (!is_numeric($id)) {
       throw new TogglException('Invalid load ID ' . $id);
@@ -63,9 +63,12 @@ abstract class TogglRecord {
   public static function loadMultiple(TogglConnection $connection, array $query = array()) {
     $class = get_called_class();
     $response = $connection->request($connection->getUrl($class::$element_plural_name, $query));
+    $count = 0;
     foreach ($response->data['data'] as $key => $record) {
       $response->data['data'][$key] = new $class($connection, $record);
+      $count++;
     }
+    $response->data['count'] = $count;
     return $response->data;
   }
 
