@@ -10,7 +10,7 @@ system's API.
 
 ## Requirements ##
 
-* PHP 5.2 or higher
+* PHP 5.3 or higher
 * [cURL](http://us.php.net/manual/en/book.curl.php) extension
 * [JSON](http://us.php.net/manual/en/book.json.php) extension
 * [PHPUnit](http://www.phpunit.de/) (for unit testing)
