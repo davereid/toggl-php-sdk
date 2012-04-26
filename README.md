@@ -7,6 +7,7 @@ system's API.
 * Website: http://davereid.github.com/toggl-php-sdk/
 * License: GPLv2/MIT
 * Thanks: [tanel](https://github.com/tanel)
+* [![Build Status](https://secure.travis-ci.org/davereid/toggl-php-sdk.png?branch=master)](http://travis-ci.org/davereid/toggl-php-sdk)
 
 ## Requirements ##
 
