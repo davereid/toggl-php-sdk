@@ -4,7 +4,7 @@ class TogglTimeEntry extends TogglRecord {
   static $element_name = 'time_entry';
   static $element_plural_name = 'time_entries';
 
-  public static function loadDateRange(TogglConnection $connection, $start_date = NULL, $end_date = NULL) {
+  public static function loadDateRange(TogglConnection $connection, $start_date = NULL, $end_date = NULL, array $options = array()) {
     if (isset($start_date) != isset($end_date)) {
       throw new TogglException("Invalid parameters for loading time entries.");
     }
@@ -18,6 +18,6 @@ class TogglTimeEntry extends TogglRecord {
       $query['end_date'] = gmdate($connection::DATE_FORMAT, $end_date);
     }
 
-    return parent::loadMultiple($connection, $query);
+    return parent::loadMultiple($connection, $query, $options);
   }
 }

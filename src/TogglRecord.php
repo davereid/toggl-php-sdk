@@ -4,8 +4,8 @@ abstract class TogglRecord {
   static $element_name;
   static $element_plural_name;
 
-  private $data = array();
-  private $connection;
+  protected $data = array();
+  protected $connection;
 
   public function __construct(TogglConnection $connection, array $data = array()) {
     $this->connection = $connection;
@@ -46,7 +46,7 @@ abstract class TogglRecord {
     return $this->data;
   }
 
-  public static function load(TogglConnection $connection, $id) {
+  public static function load(TogglConnection $connection, $id, array $options = array()) {
     if (!is_numeric($id)) {
       throw new TogglException('Invalid load ID ' . $id);
     }
@@ -60,9 +60,9 @@ abstract class TogglRecord {
     return FALSE;
   }
 
-  public static function loadMultiple(TogglConnection $connection, array $query = array()) {
+  public static function loadMultiple(TogglConnection $connection, array $query = array(), array $options = array()) {
     $class = get_called_class();
-    $response = $connection->request($connection->getUrl($class::$element_plural_name, $query));
+    $response = $connection->request($connection->getUrl($class::$element_plural_name, $query), $options);
     $count = 0;
     foreach ($response->data['data'] as $key => $record) {
       $response->data['data'][$key] = new $class($connection, $record);
@@ -72,7 +72,7 @@ abstract class TogglRecord {
     return $response->data;
   }
 
-  public function save() {
+  public function save(array $options = array()) {
     $options['method'] = !empty($this->id) ? 'PUT' : 'POST';
     $options['data'][$this::$element_name] = $this->data;
     $url = $this::element_plural_name . (!empty($this->id) ? '/' . $this->id : '');
@@ -81,7 +81,7 @@ abstract class TogglRecord {
     return TRUE;
   }
 
-  public function delete() {
+  public function delete(array $options = array()) {
     if (!empty($this->id)) {
       $options['method'] = 'DELETE';
       $url = $this::$element_plural_name . '/' . $this->id;

@@ -17,6 +17,8 @@ class TogglConnection {
 
   private $token;
 
+  private $options = array();
+
   /**
    * Construct the API object.
    */
@@ -30,6 +32,14 @@ class TogglConnection {
 
   public function getToken() {
     return $this->token;
+  }
+
+  public function getOptions() {
+    return $this->options;
+  }
+
+  public function setOptions(array $options) {
+    $this->options = $options;
   }
 
   /**
@@ -64,7 +74,7 @@ class TogglConnection {
   }
 
   public function request($url, array $options = array()) {
-    $options += array(
+    $options += $this->getOptions() + array(
       'headers' => array(),
       'method' => 'GET',
       'data' => NULL,
