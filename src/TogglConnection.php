@@ -22,8 +22,9 @@ class TogglConnection {
   /**
    * Construct the API object.
    */
-  public function __construct($token) {
+  public function __construct($token, array $options = array()) {
     $this->token = $token;
+    $this->options = $options;
   }
 
   public function setToken($token) {
