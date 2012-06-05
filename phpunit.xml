@@ -1,0 +1,7 @@
+<phpunit>
+  <testsuites>
+    <testsuite name="Toggl">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>
