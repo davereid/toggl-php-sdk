@@ -9,15 +9,14 @@ class TogglTimeEntry extends TogglRecord {
       throw new TogglException("Invalid parameters for loading time entries.");
     }
 
-    $query = array();
     if (isset($start_date) && isset($end_date)) {
       if ($end_date < $start_date) {
         throw new TogglException("Start date cannot be after the end date.");
       }
-      $query['start_date'] = gmdate($connection::DATE_FORMAT, $start_date);
-      $query['end_date'] = gmdate($connection::DATE_FORMAT, $end_date);
+      $options['query']['start_date'] = gmdate($connection::DATE_FORMAT, $start_date);
+      $options['query']['end_date'] = gmdate($connection::DATE_FORMAT, $end_date);
     }
 
-    return parent::loadMultiple($connection, $query, $options);
+    return parent::loadMultiple($connection, $options);
   }
 }

@@ -3,7 +3,7 @@
 class TogglUser extends TogglRecord {
   static $element_name = 'me';
 
-  public static function loadAll(array $options = array()) {
+  public static function loadMultiple(TogglConnection $connection, array $options = array()) {
     return FALSE;
   }
 

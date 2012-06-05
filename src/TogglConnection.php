@@ -74,12 +74,15 @@ class TogglConnection {
     );
   }
 
-  public function request($url, array $options = array()) {
+  public function request($resource, array $options = array()) {
     $options += $this->getOptions() + array(
       'headers' => array(),
       'method' => 'GET',
+      'query' => array(),
       'data' => NULL,
     );
+
+    $url = $this->getURL($resource, $options['query']);
 
     // Set the CURL variables.
     $ch = curl_init();
@@ -121,7 +124,7 @@ class TogglConnection {
   }
 
   public function getUser() {
-    $response = $this->request($this->getURL('me'));
+    $response = $this->request('me');
     if (!empty($response->data['data'])) {
       return new TogglUser($this, $response->data['data']);
     }
