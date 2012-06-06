@@ -1,13 +1,29 @@
 <?php
 
+/**
+ * @file
+ * Defines TogglUtility.
+ */
+
 class TogglUtility {
 
+  /**
+   * The date format used by Toggl.com.
+   */
   const DATE_FORMAT = 'Y-m-d\TH:i:sO';
 
   /**
    * Filter an array of objects or nested arrays by a variable depth value.
    *
-   * @see toggl_get_nested_value()
+   * @param array $items
+   *   An array of objects or arrays to filter.
+   * @param array $parents
+   *   An array of parent keys of the value, starting with the outermost key.
+   * @param mixed $value
+   *   A value or array of values to match using TogglUtility::getNestedValue().
+   *
+   * @return array
+   *   An array of items that matched nested value $value.
    */
   public static function filterItemsByNestedValue(array $items, array $parents, $value) {
     $return = array();
@@ -29,8 +45,8 @@ class TogglUtility {
   /**
    * Retrieves a value from an object or nested array with variable depth.
    *
-   * This is a copy of drupal_array_get_nested_value() but with added support
-   * for objects.
+   * This is a copy of Drupal's drupal_array_get_nested_value() but with added
+   * support for objects.
    *
    * @param mixed $item
    *   The array or object from which to get the value.
