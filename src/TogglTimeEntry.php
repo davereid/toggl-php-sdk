@@ -13,8 +13,8 @@ class TogglTimeEntry extends TogglRecord {
       if ($end_date < $start_date) {
         throw new TogglException("Start date cannot be after the end date.");
       }
-      $options['query']['start_date'] = gmdate($connection::DATE_FORMAT, $start_date);
-      $options['query']['end_date'] = gmdate($connection::DATE_FORMAT, $end_date);
+      $options['query']['start_date'] = gmdate(TogglUtility::DATE_FORMAT, $start_date);
+      $options['query']['end_date'] = gmdate(TogglUtility::DATE_FORMAT, $end_date);
     }
 
     return parent::loadMultiple($connection, $options);

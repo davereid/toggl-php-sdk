@@ -11,8 +11,6 @@ class TogglConnection {
    */
   const API_VERSION = 'v6';
 
-  const DATE_FORMAT = 'Y-m-d\TH:i:sO';
-
   private $userAgent = 'Toggl PHP SDK';
 
   private $token;
