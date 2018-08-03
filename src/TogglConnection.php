@@ -9,13 +9,16 @@ class TogglConnection {
   /**
    * The Toggl API version, used in HTTP requests.
    */
-  const API_VERSION = 'v6';
+  const API_VERSION = 'v8';
 
   private $userAgent = 'Toggl PHP SDK';
 
   private $token;
 
   private $options = array();
+  
+  public $debug = false;
+  public $curlVerbose = null;
 
   /**
    * Construct the API object.
@@ -53,7 +56,7 @@ class TogglConnection {
    *   A fully-quantified Toggl API URL.
    */
   public function getURL($resource, array $query = array()) {
-    $url = 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $resource . '.json';
+    $url = 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $resource;
     if (!empty($query)) {
       $url .= '?' . http_build_query($query, NULL, '&');
     }
@@ -98,6 +101,12 @@ class TogglConnection {
     curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $options['method']);
     curl_setopt($ch, CURLOPT_USERPWD, $this->getToken() . ':api_token');
+    if ($this->debug) {
+      $this->curlVerbose = array('url' => $url, 'postfields' => isset($options['data'])?json_encode($options['data']):null);
+      curl_setopt($ch, CURLOPT_VERBOSE, true);
+      $verbose = fopen('php://temp', 'rw+');
+      curl_setopt($ch, CURLOPT_STDERR, $verbose);
+    }
 
     // Build and format the headers.
     foreach (array_merge($this->getHeaders(), $options['headers']) as $header => $value) {
@@ -118,6 +127,14 @@ class TogglConnection {
     $response->success = $response->code == 200;
 
     curl_close($ch);
+    
+    if ($this->debug) {
+      rewind($verbose);
+      $this->curlVerbose['result'] = $result;
+      $this->curlVerbose['curl'] = stream_get_contents($verbose);
+      fclose($verbose);
+    }
+    
     return $response;
   }
 
