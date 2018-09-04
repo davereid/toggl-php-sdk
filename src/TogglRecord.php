@@ -66,13 +66,12 @@ abstract class TogglRecord {
   public static function loadMultiple(TogglConnection $connection, array $options = array()) {
     $class = get_called_class();
     $response = $connection->request($class::$element_plural_name, $options);
-    $count = 0;
-    foreach ($response->data['data'] as $key => $record) {
-      $response->data['data'][$key] = new $class($connection, $record);
-      $count++;
+    $ret = array('data' => array(), 'count' => 0);
+    foreach ($response->data as $key => $record) {
+      $ret['data'][] = new $class($connection, $record);
     }
-    $response->data['count'] = $count;
-    return $response->data;
+    $ret['count'] = count($ret['data']);
+    return $ret;
   }
 
   public function save(array $options = array()) {
