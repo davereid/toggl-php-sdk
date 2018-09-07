@@ -12,7 +12,7 @@ class Toggl {
   /**
    * The Toggl API version, used in HTTP requests.
    */
-  const API_VERSION = 'v6';
+  const API_VERSION = 'v8';
 
   const DATE_FORMAT = 'Y-m-d\TH:i:sO';
 
@@ -47,7 +47,7 @@ class Toggl {
    *   A fully-quantified Toggl API URL.
    */
   protected function getURL($resource, array $query = array()) {
-    $url = 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $resource . '.json';
+    $url = 'https://www.toggl.com/api/' . self::API_VERSION . '/' . $resource;
     if (!empty($query)) {
       $url .= '?' . http_build_query($query, NULL, '&');
     }

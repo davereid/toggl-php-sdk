@@ -10,7 +10,7 @@ class TogglUtility {
   /**
    * The date format used by Toggl.com.
    */
-  const DATE_FORMAT = 'Y-m-d\TH:i:sO';
+  const DATE_FORMAT = 'c';
 
   /**
    * Filter an array of objects or nested arrays by a variable depth value.
