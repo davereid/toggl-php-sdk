@@ -11,7 +11,7 @@ class TogglConnection {
    */
   const API_VERSION = 'v8';
 
-  private $userAgent = 'Toggl PHP SDK';
+  public $userAgent = 'Toggl PHP SDK';
 
   private $token;
 
